@@ -46,6 +46,10 @@ export default class BaseScene extends Phaser.Scene {
       // TODO разобраться ок или нет
       this.load.image(makeAssetName(asset.id), asset.url);
     }
+    else if (asset.variant === AssetVariant.Sound) {
+      this.load.audio(asset.name, asset.url);
+      this.load.audio(makeAssetName(asset.id), asset.url);
+    }
     else {
       console.warn(`Неизвестный тип ассета ${asset.variant}`);
     }

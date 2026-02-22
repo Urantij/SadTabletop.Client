@@ -18,6 +18,7 @@ import CardSelectionSystem from "./things/concrete/CardSelection/CardSelectionSy
 import type { EntitiesBaseSystem } from "./things/EntitiesSystem";
 import ChatSystem from "./things/concrete/Chat/ChatSystem";
 import type AssetVariant from "./things/AssetVariant";
+import SoundsSystem from "./things/concrete/Sounds/SoundsSystem";
 
 type LeGameEvents = {
   Clearing: () => void;
@@ -42,6 +43,8 @@ export default class LeGame {
     this.settings,
     this.cardSelection
   ];
+
+  public readonly sounds: SoundsSystem = new SoundsSystem();
 
   public readonly hands: HandsSystem = new HandsSystem(this.table, this.bench);
   public readonly playable: PlayableSystem = new PlayableSystem(this.table, this.bench);
@@ -83,6 +86,7 @@ export default class LeGame {
     this.hints.subscribeToConnection(connection);
     this.drags.subscribeToConnection(connection);
     this.chatts.subscribeToConnection(connection);
+    this.sounds.subscribeToConnection(connection);
   }
 
   private meJoined(data: JoinedMessage): void {

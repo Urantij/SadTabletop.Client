@@ -913,4 +913,38 @@ export default class MainScene extends BaseScene {
 
     obj.updateClicky(clicky);
   }
+
+  // позовите менеджера.
+  private readonly soundSound: { id: number, sound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound }[] = [];
+  playSound(name: string, multiplier: number, playId: number | null) {
+
+    if (playId === null) {
+      this.sound.play(name, {
+        volume: multiplier
+      });
+    }
+    else {
+      const sound = this.sound.add(name, {
+        volume: multiplier
+      });
+      // хмм как думаешь оно всегда проигрывает или у меня утечка папамятити? TODO
+      sound.once("complete", () => {
+        removeFromCollection(this.soundSound, s => s.id === playId);
+      });
+      this.soundSound.push({ id: playId, sound: sound });
+      sound.play();
+    }
+  }
+
+  stopSound(playId: number) {
+    const data = removeFromCollection(this.soundSound, s => s.id === playId);
+
+    if (data === undefined) {
+      console.warn(`при попытке найти звук ${playId} не нашлось`);
+      return;
+    }
+
+    data.sound.stop();
+    data.sound.destroy();
+  }
 }

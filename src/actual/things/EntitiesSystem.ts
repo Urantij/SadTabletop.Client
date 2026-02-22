@@ -1,7 +1,6 @@
 import type TypedEmitter from "@/utilities/TypedEmiiter";
 import type Entity from "./Entity";
 import { removeFromCollection } from "@/utilities/MyCollections";
-import type { un } from "vue-router/dist/router-CWoNjPRp.mjs";
 
 // когда ентити приходит с сервера, у этой ентити могут быть ссылки на другие ентити
 // или скорее компоненты, которые ссылаются на другие ентити
