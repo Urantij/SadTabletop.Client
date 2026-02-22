@@ -67,11 +67,10 @@ export default class HandScene extends BaseScene {
   private preload() {
     console.log("preload");
 
-    this.load.image(defaultBackSideKey, "back.png");
-    this.load.image(defaultFrontSidekey, "front.png");
+    this.loadDefaultAssets();
 
     for (const data of this.leGame.assetsData) {
-      this.load.image(data.name, data.url);
+      this.loadAsset(data);
     }
   }
 

@@ -1,7 +1,7 @@
 import type Dice from "@/actual/things/concrete/Dices/Dice";
 import SimpleRenderObjectRepresentation from "../SimpleRenderObjectRepresentation";
 import type BaseScene from "../BaseScene";
-import { makeTextureId } from "../MainScene";
+import { makeAssetName } from "../MainScene";
 import Sizes from "../Sizes";
 
 type Referenced = {
@@ -131,7 +131,7 @@ export default class DiceObject extends SimpleRenderObjectRepresentation<Dice, P
     let background: Phaser.Textures.Texture;
 
     if (assetId !== null) {
-      background = scene.textures.get(makeTextureId(assetId));
+      background = scene.textures.get(makeAssetName(assetId));
     }
     else {
       background = scene.textures.get(defaultDiceTextureKey);

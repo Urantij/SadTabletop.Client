@@ -6,7 +6,7 @@ import type { InHandComponent } from "@/actual/things/concrete/Hands/InHandCompo
 import type BaseScene from "../BaseScene";
 import { DepthChart } from "../Renderer";
 import type { PlayableComponent } from "@/actual/things/concrete/Playable/PlayableComponent";
-import { makeCardTextureId } from "../MainScene";
+import { makeCardTextureName } from "../MainScene";
 import CardRenderManager from "../CardRenderManager";
 import type CardFaceComplicated from "@/actual/things/concrete/Cards/CardFaceComplicated";
 
@@ -95,7 +95,7 @@ export default class CardObject extends SimpleRenderObjectRepresentation<Card, P
       return scene.cardRender.allocCardTexture(face.side, face.renderInfos)
     }
 
-    const cardId = makeCardTextureId(face.side);
+    const cardId = makeCardTextureName(face.side);
 
     if (scene.textures.exists(cardId))
       return scene.textures.get(cardId);

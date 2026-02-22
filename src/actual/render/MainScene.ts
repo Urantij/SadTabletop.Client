@@ -46,10 +46,10 @@ type MainSceneEvents = {
 }
 
 // TODO не тут
-export function makeCardTextureId(num: number) {
+export function makeCardTextureName(num: number) {
   return `card${num}`;
 }
-export function makeTextureId(assetId: number) {
+export function makeAssetName(assetId: number) {
   return `_assetid${assetId}`;
 }
 
@@ -100,22 +100,10 @@ export default class MainScene extends BaseScene {
   private preload() {
     console.log("preload");
 
-    this.textures.generate(defaultDiceTextureKey, {
-      data: ['1'],
-      pixelWidth: 1,
-      pixelHeight: 1
-    })
-
-    this.load.image(defaultBackSideKey, "back.png");
-    this.load.image(defaultFrontSidekey, "front.png");
-    this.load.image(cursorTextureKey, "cursor.png");
-
-    this.load.image(deckSpotKey, "deckspot.png");
+    this.loadDefaultAssets();
 
     for (const data of this.leGame.assetsData) {
-      this.load.image(data.name, data.url);
-      // TODO разобраться ок или нет
-      this.load.image(makeTextureId(data.id), data.url);
+      this.loadAsset(data);
     }
   }
 

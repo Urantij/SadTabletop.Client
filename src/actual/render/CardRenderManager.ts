@@ -1,7 +1,7 @@
 import { removeItemFromCollection } from "@/utilities/MyCollections";
 import type CardRenderInfo from "../things/concrete/Cards/CardRenderInfo";
 import type CardTextRender from "../things/concrete/Cards/render/CardTextRender";
-import { makeCardTextureId } from "./MainScene";
+import { makeCardTextureName } from "./MainScene";
 import { defaultFrontSidekey } from "./objects/CardObject";
 import Sizes from "./Sizes";
 import type BaseScene from "./BaseScene";
@@ -75,7 +75,7 @@ export default class CardRenderManager {
   }
 
   private createTexture(side: number, infos: CardRenderInfo[]) {
-    const baseTextureCardId = makeCardTextureId(side);
+    const baseTextureCardId = makeCardTextureName(side);
     const resultTextureId: string = CardRenderManager.makeCustomCardId();
 
     let baseTexture: Phaser.Textures.Texture;

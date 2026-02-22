@@ -17,6 +17,7 @@ import SettingsSystem from "./things/concrete/Settings/SettingsSystem";
 import CardSelectionSystem from "./things/concrete/CardSelection/CardSelectionSystem";
 import type { EntitiesBaseSystem } from "./things/EntitiesSystem";
 import ChatSystem from "./things/concrete/Chat/ChatSystem";
+import type AssetVariant from "./things/AssetVariant";
 
 type LeGameEvents = {
   Clearing: () => void;
@@ -52,7 +53,7 @@ export default class LeGame {
   public readonly chatts: ChatSystem = new ChatSystem(this);
 
   public readonly sidesData: { num: number; path: string }[] = [];
-  public readonly assetsData: { id: number, name: string; url: string }[] = [];
+  public readonly assetsData: AssetInfo[] = [];
 
   public readonly playersContainer: PlayersContainer = new PlayersContainer(this);
 
@@ -91,11 +92,7 @@ export default class LeGame {
 
       if (entity.type === "AssetInfo") {
         const info = entity as AssetInfo;
-        this.assetsData.push({
-          id: info.id,
-          name: info.name,
-          url: info.url
-        });
+        this.assetsData.push(info);
         continue;
       }
 
