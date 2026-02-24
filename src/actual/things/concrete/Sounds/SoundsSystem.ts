@@ -2,9 +2,10 @@ import type TypedEmitter from "@/utilities/TypedEmiiter";
 import type Connection from "@/communication/Connection";
 import type PlaySoundMessage from "./Messages/Server/PlaySoundMessage";
 import type StopSoundMessage from "./Messages/Server/StopSoundMessage";
+import SoundCategory from "./SoundCategory";
 
 type SoundEvents = {
-  SoundNeedsToBePlayed: (name: string, multiplier: number, playId: number | null) => void;
+  SoundNeedsToBePlayed: (name: string, multiplier: number, playId: number | null, category: SoundCategory) => void;
   SoundNeedsToBeStopped: (playId: number) => void;
 }
 
@@ -25,8 +26,9 @@ export default class SoundsSystem {
 
     const multiplier = msg.multiplier ?? 1;
     const playId = msg.playId ?? null;
+    const category = msg.category ?? SoundCategory.Effect;
 
-    this.events.emit("SoundNeedsToBePlayed", msg.assetName, multiplier, playId);
+    this.events.emit("SoundNeedsToBePlayed", msg.assetName, multiplier, playId, category);
   }
 
   private soundToBeStopped(msg: StopSoundMessage): void {

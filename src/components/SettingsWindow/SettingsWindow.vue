@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/UserStore';
-import { ref, useTemplateRef } from 'vue';
+import { onMounted, onUnmounted, ref, useTemplateRef, watch, type WatchHandle } from 'vue';
 import DumbWindow from '../DumbWindow.vue';
 import type SettingsWiwdowData from './SettingsWiwdowData';
+import { getSoundCategoryName } from '@/actual/things/concrete/Sounds/SoundCategory';
 
 const userStore = useUserStore();
 
@@ -29,6 +30,40 @@ function changeNameClicked() {
   userStore.setName(nameInput.value.value);
 }
 
+// изменение громкости через 100мса должно затригерить сохранение громкости.
+const handles: WatchHandle[] = [];
+let saveTimeoutHandle: undefined | number = undefined;
+onMounted(() => {
+  for (const data of userStore.volumes) {
+
+    const handle = watch(() => data.value,
+      () => {
+
+        if (saveTimeoutHandle !== undefined) {
+          clearTimeout(saveTimeoutHandle);
+        }
+
+        saveTimeoutHandle = setTimeout(() => {
+
+          saveTimeoutHandle = undefined;
+
+          console.log("сохраняемся в настроечках");
+
+          userStore.saveVolumes();
+        }, 100);
+      });
+
+    handles.push(handle);
+  }
+});
+
+onUnmounted(() => {
+
+  for (const handle of handles.splice(0)) {
+    handle.stop();
+  }
+});
+
 </script>
 
 <template>
@@ -45,6 +80,15 @@ function changeNameClicked() {
     <div>
       <span>лангуае</span>
       <input>рофлан ебало</input>
+    </div>
+    <div>
+      <span>долбит нормально?</span>
+      <template v-for="volume in userStore.volumes">
+        <label :for="'v' + getSoundCategoryName(volume.category)">{{ getSoundCategoryName(volume.category)
+          }}</label>
+        <input v-model="volume.value" :name="'v' + getSoundCategoryName(volume.category)" type="range" min="0" max="1"
+          step="0.01">
+      </template>
     </div>
   </DumbWindow>
 </template>

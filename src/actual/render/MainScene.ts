@@ -37,6 +37,9 @@ import type TableItem from "../things/concrete/Table/TableItem";
 import type DeckCardInsertedData from "../things/concrete/Decks/DeckCardInsertedData";
 import DiceObject, { defaultDiceTextureKey } from "./objects/DiceObject";
 import type Dice from "../things/concrete/Dices/Dice";
+import SoundCenter from "./SoundCenter";
+import { useUserStore } from "@/stores/UserStore";
+import { watch } from "vue";
 
 type MainSceneEvents = {
   ObjectCreated: (obj: RenderObjectRepresentation) => void;
@@ -72,6 +75,8 @@ export default class MainScene extends BaseScene {
 
   readonly glowManager: SelectionGlowManager = new SelectionGlowManager();
 
+  sounder!: SoundCenter;
+
   public readonly myEvents: TypedEmitter<MainSceneEvents> = new Phaser.Events.EventEmitter();
 
   fkey: Phaser.Input.Keyboard.Key | undefined;
@@ -101,6 +106,16 @@ export default class MainScene extends BaseScene {
     console.log("preload");
 
     this.loadDefaultAssets();
+
+    // я сдался
+    const userStore = useUserStore();
+    for (const data of userStore.volumes) {
+      watch(() => data.value, () => {
+        this.sounder.updateVolume(data.category);
+      });
+    };
+
+    this.sounder = new SoundCenter(this.sound, userStore.volumes);
 
     for (const data of this.leGame.assetsData) {
       this.loadAsset(data);
@@ -912,39 +927,5 @@ export default class MainScene extends BaseScene {
     }
 
     obj.updateClicky(clicky);
-  }
-
-  // позовите менеджера.
-  private readonly soundSound: { id: number, sound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound }[] = [];
-  playSound(name: string, multiplier: number, playId: number | null) {
-
-    if (playId === null) {
-      this.sound.play(name, {
-        volume: multiplier
-      });
-    }
-    else {
-      const sound = this.sound.add(name, {
-        volume: multiplier
-      });
-      // хмм как думаешь оно всегда проигрывает или у меня утечка папамятити? TODO
-      sound.once("complete", () => {
-        removeFromCollection(this.soundSound, s => s.id === playId);
-      });
-      this.soundSound.push({ id: playId, sound: sound });
-      sound.play();
-    }
-  }
-
-  stopSound(playId: number) {
-    const data = removeFromCollection(this.soundSound, s => s.id === playId);
-
-    if (data === undefined) {
-      console.warn(`при попытке найти звук ${playId} не нашлось`);
-      return;
-    }
-
-    data.sound.stop();
-    data.sound.destroy();
   }
 }
