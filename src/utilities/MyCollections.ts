@@ -32,3 +32,9 @@ export function findForSure<T>(array: Array<T>, predicate: (t: T) => boolean): T
 
   return array[index];
 }
+
+export function getNumericEnums(data: object) {
+  return Object.values(data).slice(
+    Object.values(data).length / 2
+  );
+}
