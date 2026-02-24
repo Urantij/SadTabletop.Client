@@ -32,10 +32,11 @@ export default class SoundCenter {
     }
   }
 
-  playSound(name: string, multiplier: number, playId: number | null, category: SoundCategory) {
+  playSound(name: string, multiplier: number, playId: number | null, category: SoundCategory, loop: boolean) {
 
     const sound = this.sound.add(name, {
-      volume: this.makeVolume(multiplier, category)
+      volume: this.makeVolume(multiplier, category),
+      loop: loop
     });
     // хмм как думаешь оно всегда проигрывает или у меня утечка папамятити? TODO
     sound.once("complete", () => {

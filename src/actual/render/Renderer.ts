@@ -149,8 +149,8 @@ export default class Renderer {
             this.scene?.destroyEntity(player.cursor);
           });
 
-          this.leGame.sounds.events.on("SoundNeedsToBePlayed", (name, multiplier, playId, category) => {
-            this.scene?.sounder.playSound(name, multiplier, playId, category);
+          this.leGame.sounds.events.on("SoundNeedsToBePlayed", (name, multiplier, playId, category, loop) => {
+            this.scene?.sounder.playSound(name, multiplier, playId, category, loop);
           });
           this.leGame.sounds.events.on("SoundNeedsToBeStopped", (playId) => {
             this.scene?.sounder.stopSound(playId);
