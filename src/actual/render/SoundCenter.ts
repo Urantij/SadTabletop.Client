@@ -2,6 +2,9 @@ import { removeFromCollection } from "@/utilities/MyCollections";
 import type SoundCategory from "../things/concrete/Sounds/SoundCategory";
 import type { VolumeData } from "@/stores/UserStore";
 
+export const putCardInDeckSoundKey = "PutCardInDeckSoundKey";
+export const getCardFromDeckSoundKey = "GetCardFromDeckSoundKey";
+
 export default class SoundCenter {
 
   private readonly sound: Phaser.Sound.NoAudioSoundManager | Phaser.Sound.HTML5AudioSoundManager | Phaser.Sound.WebAudioSoundManager;
@@ -19,6 +22,11 @@ export default class SoundCenter {
     this.sound = sound;
     this.volumes = volumes;
     this.masterVolume = volumes.find(v => v.category === null)!;
+  }
+
+  preloadBasicSounds(loader: Phaser.Loader.LoaderPlugin) {
+    loader.audio(putCardInDeckSoundKey, "deal.mp3");
+    loader.audio(getCardFromDeckSoundKey, "deal.mp3");
   }
 
   updateVolume(category: SoundCategory | null) {

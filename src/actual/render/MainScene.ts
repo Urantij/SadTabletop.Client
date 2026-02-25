@@ -37,9 +37,10 @@ import type TableItem from "../things/concrete/Table/TableItem";
 import type DeckCardInsertedData from "../things/concrete/Decks/DeckCardInsertedData";
 import DiceObject, { defaultDiceTextureKey } from "./objects/DiceObject";
 import type Dice from "../things/concrete/Dices/Dice";
-import SoundCenter from "./SoundCenter";
+import SoundCenter, { getCardFromDeckSoundKey, putCardInDeckSoundKey } from "./SoundCenter";
 import { useUserStore } from "@/stores/UserStore";
 import { watch } from "vue";
+import SoundCategory from "../things/concrete/Sounds/SoundCategory";
 
 type MainSceneEvents = {
   ObjectCreated: (obj: RenderObjectRepresentation) => void;
@@ -116,6 +117,8 @@ export default class MainScene extends BaseScene {
     };
 
     this.sounder = new SoundCenter(this.sound, userStore.volumes);
+
+    this.sounder.preloadBasicSounds(this.load);
 
     for (const data of this.leGame.assetsData) {
       this.loadAsset(data);
@@ -782,6 +785,8 @@ export default class MainScene extends BaseScene {
 
       const deckPos = deckObj.getCurrentPosition();
 
+      this.sounder.playSound(getCardFromDeckSoundKey, 1, null, SoundCategory.Effect, false);
+
       obj = CardObject.create(card, this, deckPos.x, deckPos.y, Sizes.cardWidth, Sizes.cardHeight);
     }
     else {
@@ -902,6 +907,7 @@ export default class MainScene extends BaseScene {
     }
 
     this.animka.moveObjectToObject(cardObj, deckObj, () => {
+      this.sounder.playSound(putCardInDeckSoundKey, 1, null, SoundCategory.Effect, false);
       this.destroy(cardObj);
       deckObj.updateThingsPlease();
     });
