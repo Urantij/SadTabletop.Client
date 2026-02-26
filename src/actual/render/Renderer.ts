@@ -1,6 +1,6 @@
 import type TypedEmitter from "@/utilities/TypedEmiiter";
 import type LeGame from "../LeGame";
-import MainScene, { cursorMovedInTheWorldName } from "./MainScene";
+import MainScene from "./MainScene";
 import Phaser from "phaser";
 import type Entity from "../things/Entity";
 import type TextItem from "../things/concrete/TextItem";
@@ -17,7 +17,7 @@ import DeckCardRemovedData from "../things/concrete/Decks/DeckCardRemovedData";
 import type Dice from "../things/concrete/Dices/Dice";
 
 type RendererEvents = {
-  ClickyClicked: (entity: TableItem) => void;
+  ClickyClicked: (entity: TableItem, pos: Phaser.Math.Vector2) => void;
   CursorMoved: (pos: Phaser.Math.Vector2) => void;
 }
 
@@ -87,10 +87,10 @@ export default class Renderer {
 
           this.scene?.cameras.main.centerOn(0, 0);
 
-          this.scene?.events.on("ClickyClicked", (container: RenderObjectRepresentation) => {
-            this.events.emit("ClickyClicked", container.gameObject);
+          this.scene?.myEvents.on("ClickyClicked", (container: RenderObjectRepresentation, pos: Phaser.Math.Vector2) => {
+            this.events.emit("ClickyClicked", container.gameObject, pos);
           });
-          this.scene?.events.on(cursorMovedInTheWorldName, (pos: Phaser.Math.Vector2) => {
+          this.scene?.myEvents.on("CursorMovedInTheWorld", (pos: Phaser.Math.Vector2) => {
             this.events.emit("CursorMoved", pos);
           });
 

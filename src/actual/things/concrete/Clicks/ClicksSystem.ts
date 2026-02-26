@@ -29,7 +29,7 @@ export default class ClicksSystem {
     connection.registerForMessage<ItemClickyMessage>("ItemClickyMessage", (msg) => this.itemClickyChanged(msg));
   }
 
-  clickyClicked(item: TableItem) {
+  clickyClicked(item: TableItem, x: number, y: number) {
 
     const component = findClicky(item);
     if (component === undefined) {
@@ -48,6 +48,8 @@ export default class ClicksSystem {
     const message: ClickMessage = {
       item: item.id,
       clickId: component.id,
+      x: component.sendClickPosition ? x : undefined,
+      y: component.sendClickPosition ? y : undefined,
     };
 
     this.connection?.sendMessage("ClickMessage", message);
@@ -67,7 +69,8 @@ export default class ClicksSystem {
       const component: ClickComponent = {
         id: msg.component,
         type: "ClickComponent",
-        singleUse: msg.singleUse === true
+        singleUse: msg.singleUse === true,
+        sendClickPosition: msg.sendClickPosition === true,
       };
       item.components.push(component);
     }

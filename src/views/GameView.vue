@@ -68,11 +68,11 @@ chatStore.$onAction(({
   });
 });
 
-gameRenderer.events.on("ClickyClicked", (entity) => {
+gameRenderer.events.on("ClickyClicked", (entity, pos) => {
 
   // здесь должна быть система ивентов
   // но мне лень
-  leGame.table.clicks.clickyClicked(entity);
+  leGame.table.clicks.clickyClicked(entity, pos.x, pos.y);
 });
 
 let lastCursorPos: Phaser.Math.Vector2 | null = null;
@@ -113,7 +113,7 @@ onMounted(async () => {
         popitStore.removeHint(hoverHint);
         hoverHint = null;
       });
-      gameRenderer.scene!.myEvents.on("DeckRightClicked", (pointer, obj) => {
+      gameRenderer.scene!.myEvents.on("DeckRightClicked", (pointer, obj, pos) => {
         // не нужно кстати
         pointer.event.preventDefault();
 
@@ -131,7 +131,7 @@ onMounted(async () => {
           items.push({
             label: "Нажать",
             onClick: () => {
-              leGame.table.clicks.clickyClicked(obj.gameObject);
+              leGame.table.clicks.clickyClicked(obj.gameObject, pos.x, pos.y);
             }
           });
         }

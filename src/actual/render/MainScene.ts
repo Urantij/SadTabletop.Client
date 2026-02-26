@@ -1,12 +1,12 @@
 import type TypedEmitter from "@/utilities/TypedEmiiter";
 import Phaser from "phaser";
-import CardObject, { defaultBackSideKey, defaultFrontSidekey } from "./objects/CardObject";
+import CardObject from "./objects/CardObject";
 import type RenderObjectRepresentation from "@/actual/render/RenderObjectRepresentation.ts";
 import { removeFromCollection } from "@/utilities/MyCollections.ts";
 import type TextItem from "../things/concrete/TextItem";
 import TextItemObject from "./objects/TextItemObject";
 import type Deck from "@/actual/things/concrete/Decks/Deck";
-import DeckObject, { deckSpotKey } from "./objects/DeckObject";
+import DeckObject from "./objects/DeckObject";
 import type Card from "../things/concrete/Cards/Card";
 import DeckCardRemovedData from "../things/concrete/Decks/DeckCardRemovedData";
 import { ContainerObjectDataKey } from "./SimpleRenderObjectRepresentation";
@@ -14,7 +14,7 @@ import type RectShape from "../things/concrete/Shapes/RectShape";
 import RectShapeObject from "./objects/RectShapeObject";
 import type CircleShape from "../things/concrete/Shapes/CircleShape";
 import CircleShapeObject from "./objects/CircleShapeObject";
-import CursorObject, { cursorTextureKey } from "./objects/CursorObject";
+import CursorObject from "./objects/CursorObject";
 import type Player from "../things/Player";
 import HandScene, { cardDragEndedName, cardDragName, cardDragStartedName, cardPlayedOnName, pointerOverHoveredName } from "./HandScene";
 import BaseScene from "./BaseScene";
@@ -35,7 +35,7 @@ import MyTileSpriteObject from "./objects/MyTileSpriteObject";
 import type CameraBoundSetting from "../things/concrete/Settings/Variants/CameraBoundSetting";
 import type TableItem from "../things/concrete/Table/TableItem";
 import type DeckCardInsertedData from "../things/concrete/Decks/DeckCardInsertedData";
-import DiceObject, { defaultDiceTextureKey } from "./objects/DiceObject";
+import DiceObject from "./objects/DiceObject";
 import type Dice from "../things/concrete/Dices/Dice";
 import SoundCenter, { getCardFromDeckSoundKey, putCardInDeckSoundKey } from "./SoundCenter";
 import { useUserStore } from "@/stores/UserStore";
@@ -46,7 +46,9 @@ type MainSceneEvents = {
   ObjectCreated: (obj: RenderObjectRepresentation) => void;
   DescriptionRequired: (obj: RenderObjectRepresentation) => void;
   DescriptionNotNeeded: (obj: RenderObjectRepresentation) => void;
-  DeckRightClicked: (pointer: Phaser.Input.Pointer, obj: DeckObject) => void;
+  DeckRightClicked: (pointer: Phaser.Input.Pointer, obj: DeckObject, pos: Phaser.Math.Vector2) => void;
+  ClickyClicked: (container: RenderObjectRepresentation, pos: Phaser.Math.Vector2) => void;
+  CursorMovedInTheWorld: (pos: Phaser.Math.Vector2) => void;
 }
 
 // TODO не тут
@@ -56,8 +58,6 @@ export function makeCardTextureName(num: number) {
 export function makeAssetName(assetId: number) {
   return `_assetid${assetId}`;
 }
-
-export const cursorMovedInTheWorldName = "CursorMovedInTheWorld";
 
 interface DragHolder {
   item: RenderObjectRepresentation;
@@ -345,7 +345,10 @@ export default class MainScene extends BaseScene {
           }
 
           if (container instanceof DeckObject) {
-            this.myEvents.emit("DeckRightClicked", pointer, container);
+            const pos = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
+            pos.x -= container.gameObject.x;
+            pos.y -= container.gameObject.y;
+            this.myEvents.emit("DeckRightClicked", pointer, container, pos);
           }
           return;
         }
@@ -356,7 +359,13 @@ export default class MainScene extends BaseScene {
           return;
         }
 
-        this.events.emit("ClickyClicked", wereClicked[0]);
+        const clicked = wereClicked[0];
+
+        // а почему в курсор мву
+        const pos = pointer.positionToCamera(this.cameras.main) as Phaser.Math.Vector2;
+        pos.x -= clicked.gameObject.x;
+        pos.y -= clicked.gameObject.y;
+        this.myEvents.emit("ClickyClicked", clicked, pos);
       });
       // this.input.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
       //   if (heldObject === null)
@@ -442,7 +451,7 @@ export default class MainScene extends BaseScene {
         // pos.x /= this.cameras.main.zoom;
         // pos.y /= this.cameras.main.zoom;
 
-        this.events.emit(cursorMovedInTheWorldName, pos);
+        this.myEvents.emit("CursorMovedInTheWorld", pos);
       });
 
       this.hander.events.on(pointerOverHoveredName, (hoveredObj: CardObject, relative: Phaser.Math.Vector2) => {
@@ -476,7 +485,7 @@ export default class MainScene extends BaseScene {
           pos.x += hand.handPositionX;
           pos.y += hand.handPositionY;
 
-          this.events.emit(cursorMovedInTheWorldName, pos);
+          this.myEvents.emit("CursorMovedInTheWorld", pos);
         }
         else {
           const pos = cardObj.getCurrentPosition().clone();
@@ -484,7 +493,7 @@ export default class MainScene extends BaseScene {
           pos.x += cardObj.sprite.displayWidth * relative.x;
           pos.y += cardObj.sprite.displayHeight * relative.y;
 
-          this.events.emit(cursorMovedInTheWorldName, pos);
+          this.myEvents.emit("CursorMovedInTheWorld", pos);
         }
       });
     }
