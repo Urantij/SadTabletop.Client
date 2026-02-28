@@ -7,4 +7,6 @@ export default interface PopitData {
 
   canHide: boolean;
   canClose: boolean;
+
+  closeCallback: ((data: PopitData) => void) | undefined;
 }

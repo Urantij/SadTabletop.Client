@@ -1,8 +1,7 @@
 import type HintData from "@/components/HintData";
 import type PopitData from "@/components/PopitData";
 import type PopitOption from "@/components/PopitOption";
-import WiwdowType from "@/components/Wiwdow/WiwdowType";
-import { removeFromCollection, removeItemFromCollection } from "@/utilities/MyCollections";
+import { removeFromCollection } from "@/utilities/MyCollections";
 import { defineStore } from "pinia";
 import { ref, type Ref } from "vue";
 
@@ -14,7 +13,7 @@ export const usePopitStore = defineStore('popit', () => {
 
   const hints: Ref<HintData[]> = ref([]);
 
-  function addPopit(title: string, options: PopitOption[], canHide: boolean = true, canClose: boolean = true) {
+  function addPopit(title: string, options: PopitOption[], canHide: boolean = true, canClose: boolean = true, closeCallback: ((data: PopitData) => void) | undefined = undefined) {
 
     // position: 'absolute', top: '300px', left: '500px', width: '500px', height: '500px'
     const data: PopitData = {
@@ -22,7 +21,8 @@ export const usePopitStore = defineStore('popit', () => {
       options: options,
       canHide: canHide,
       canClose: canClose,
-      finished: false
+      finished: false,
+      closeCallback: closeCallback
     };
 
     arr.value.push(data);

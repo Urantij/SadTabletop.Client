@@ -211,8 +211,14 @@ function onResize(ev: UIEvent) {
 }
 
 function popitWantsClose() {
-  currentPopit.value!.popit.finished = true;
+
+  const popit = currentPopit.value!.popit;
+
+  popit.finished = true;
   trySetNextPopit();
+
+  if (popit.closeCallback !== undefined)
+    popit.closeCallback(popit);
 }
 function popitWantsHide() {
   showPopitButton.value = true;
@@ -342,8 +348,8 @@ function unhideButtonClicked() {
     <button class="bubutton" @click="(ev) => settingsClicked()">O</button>
     <button class="bubutton" v-if="showPopitButton" @click="(ev) => popitButtonClicked()">P</button>
     <button class="bubutton" v-if="wiwdowsButHidden.length > 0" @click="(ev) => unhideButtonClicked()">H</button>
-    <Popit v-if="currentPopit !== null" :data="currentPopit" @close-me="popitWantsClose()" @hide-me="popitWantsHide()"
-      @option-clicked="(option) => popitChoseOption(option)">
+    <Popit v-if="currentPopit !== null && showPopit" v-show="showPopit" :data="currentPopit"
+      @close-me="popitWantsClose()" @hide-me="popitWantsHide()" @option-clicked="(option) => popitChoseOption(option)">
     </Popit>
   </div>
 </template>

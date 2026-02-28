@@ -5,6 +5,7 @@ import connectionInstance from '@/communication/ConnectionDva';
 import type ChangeNameMessage from '@/communication/messages/client/ChangeNameMessage';
 import type MoveCursorMessage from '@/communication/messages/client/MoveCursorMessage';
 import type HintData from '@/components/HintData';
+import type PopitOption from '@/components/PopitOption';
 import UiContainer from '@/components/UiContainer.vue';
 import { useChatStore } from '@/stores/ChatStore';
 import { usePopitStore } from '@/stores/PopitStore';
@@ -26,8 +27,8 @@ const connection = connectionInstance;
 
 const draw = ref(false);
 
-const leGame = new LeGame();
-leGame.subscribeToConnection(connection);
+const leGame = new LeGame(connection);
+leGame.subscribeToConnection();
 
 leGame.chatts.events.on("NewMessageAppeared", (msg) => {
   chatStore.addMessage(msg);
@@ -35,6 +36,21 @@ leGame.chatts.events.on("NewMessageAppeared", (msg) => {
 leGame.chatts.events.on("Reset", (msg) => {
   chatStore.reset(msg);
 });
+
+leGame.popits.events.on("EntityAdded", (popit, data) => {
+
+  const options: PopitOption[] = popit.options.map((o, index) => ({
+    title: o,
+    callback: () => {
+      leGame.popits.sendChoice(popit, index);
+    }
+  }));
+
+  popitStore.addPopit(popit.title, options, true, popit.canSkip, (data) => {
+    leGame.popits.sendChoice(popit, null);
+  });
+});
+// TODO убирать попыты кто будет?
 
 const gameRenderer = new Renderer(leGame, window.innerWidth, window.innerHeight, divId);
 

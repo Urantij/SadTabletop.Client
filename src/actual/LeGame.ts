@@ -18,6 +18,7 @@ import CardSelectionSystem from "./things/concrete/CardSelection/CardSelectionSy
 import type { EntitiesBaseSystem } from "./things/EntitiesSystem";
 import ChatSystem from "./things/concrete/Chat/ChatSystem";
 import SoundsSystem from "./things/concrete/Sounds/SoundsSystem";
+import PopitsSystem from "./things/concrete/Popits/PopitsSystem";
 
 type LeGameEvents = {
   Clearing: () => void;
@@ -36,11 +37,14 @@ export default class LeGame {
 
   public readonly cardSelection: CardSelectionSystem = new CardSelectionSystem(this);
 
+  public readonly popits: PopitsSystem = new PopitsSystem(this);
+
   private readonly entitiesSystems: EntitiesBaseSystem[] = [
     this.table,
     this.bench,
     this.settings,
-    this.cardSelection
+    this.cardSelection,
+    this.popits
   ];
 
   public readonly sounds: SoundsSystem = new SoundsSystem();
@@ -63,29 +67,28 @@ export default class LeGame {
 
   public ourPlayer: Player | null = null;
 
-  public connection: Connection | null = null;
+  public readonly connection: Connection;
 
-  constructor() {
+  constructor(connection: Connection) {
+    this.connection = connection;
   }
 
-  subscribeToConnection(connection: Connection) {
-    this.connection = connection;
+  subscribeToConnection() {
+    this.connection.events.once("MeJoined", (data) => this.meJoined(data));
+    this.connection.events.on("EntityAdded", (data) => this.entityAdded(data));
+    this.connection.events.on("EntityRemoved", (data) => this.entityRemoved(data));
 
-    connection.events.once("MeJoined", (data) => this.meJoined(data));
-    connection.events.on("EntityAdded", (data) => this.entityAdded(data));
-    connection.events.on("EntityRemoved", (data) => this.entityRemoved(data));
+    this.connection.registerForMessage<YouTookSeatMessage>("YouTookSeatMessage", msg => this.youTookSeatMessage(msg));
 
-    connection.registerForMessage<YouTookSeatMessage>("YouTookSeatMessage", msg => this.youTookSeatMessage(msg));
-
-    this.table.subscribeToConnection(connection);
-    this.bench.subscribeToConnection(connection);
-    this.playersContainer.subscribeToConnection(connection);
-    this.hands.subscribeToConnection(connection);
-    this.playable.subscribeToConnection(connection);
-    this.hints.subscribeToConnection(connection);
-    this.drags.subscribeToConnection(connection);
-    this.chatts.subscribeToConnection(connection);
-    this.sounds.subscribeToConnection(connection);
+    this.table.subscribeToConnection(this.connection);
+    this.bench.subscribeToConnection(this.connection);
+    this.playersContainer.subscribeToConnection(this.connection);
+    this.hands.subscribeToConnection(this.connection);
+    this.playable.subscribeToConnection(this.connection);
+    this.hints.subscribeToConnection(this.connection);
+    this.drags.subscribeToConnection(this.connection);
+    this.chatts.subscribeToConnection(this.connection);
+    this.sounds.subscribeToConnection(this.connection);
   }
 
   private meJoined(data: JoinedMessage): void {

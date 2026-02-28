@@ -1,5 +1,4 @@
 import type TypedEmitter from "@/utilities/TypedEmiiter";
-import { removeFromCollection } from "@/utilities/MyCollections";
 import type Connection from "@/communication/Connection";
 import DeckSystem from "../Decks/DecksSystem";
 import CardsSystem from "../Cards/CardsSystem";
