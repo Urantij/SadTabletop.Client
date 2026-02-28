@@ -69,7 +69,7 @@ onUnmounted(() => {
 <template>
   <DumbWindow :style="[
     {
-      backgroundColor: 'darkgray'
+      backgroundColor: '#a9a9a9fc'
     }
   ]" :data="data" v-on:close-me="closeClicked()">
     <div>

@@ -22,6 +22,7 @@ function closeClicked() {
 }
 </script>
 
+// ааа смешная хуйня. если фон не полупрозрачный, часть экрана " зависает". обновляется только вещами поверх него
 <template>
 
   <div :style="[
@@ -32,9 +33,9 @@ function closeClicked() {
       width: `${props.data.width}px`,
       height: `${props.data.height}px`,
       pointerEvents: 'auto',
-      backgroundColor: 'darkcyan'
-    }
-  ]">
+
+      backgroundColor: '#a9a9a9fc'
+    }]">
     <div :style="[{
       height: `${uiStore.titlesHeight}px`
     }]">
