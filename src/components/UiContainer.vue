@@ -19,6 +19,9 @@ import ChatWiwdow from './Chat/ChatWiwdow.vue';
 import type ChatWiwdowData from './Chat/ChatWiwdowData';
 import type { PopitWiwdowData } from './Popit/PopitWiwdowData';
 import type PopitData from './PopitData';
+import type MenuWiwdowData from './Menu/MenuWiwdowData';
+import type Menu from '@/actual/things/concrete/Menu/Menu';
+import MenuWiwdow from './Menu/MenuWiwdow.vue';
 
 const popitStore = usePopitStore();
 
@@ -30,7 +33,9 @@ const props = defineProps<{
 
 defineExpose({
   showCardsMenu,
-  openCardsSelection
+  openCardsSelection,
+  openMenu,
+  closeMenu
 });
 
 let nextWiwdowId = 1;
@@ -130,6 +135,38 @@ onUnmounted(() => {
 });
 
 // pub
+
+function openMenu(menu: Menu) {
+  const data: MenuWiwdowData = {
+    id: getNextWiwdowId(),
+    x: 200,
+    y: 200,
+    width: 600,
+    height: 600,
+    canHide: true,
+    canClose: false,
+    title: menu.title,
+    menu: menu,
+    type: WiwdowType.Menu,
+    hidden: false,
+  };
+
+  const dataR = reactive(data);
+  wiwdows.push(dataR);
+}
+
+function closeMenu(menu: Menu) {
+  const index = wiwdows.findIndex(w => w.type === WiwdowType.Menu && (w as MenuWiwdowData).menu.id === menu.id);
+
+  if (index === -1) {
+    console.warn(`попытка закрыть несуществующее окно ${menu.type} ${menu.title}`);
+    return;
+  }
+
+  const data = wiwdows[index];
+
+  closeWiwdow(data);
+}
 
 function showCardsMenu(deck: Deck) {
   if (deck.cards === null) {
@@ -338,6 +375,9 @@ function unhideButtonClicked() {
     </div>
     <ChatWiwdow :data="chatWiwdow"></ChatWiwdow>
     <template v-for="wiwdow in wiwdows">
+      <MenuWiwdow v-if="wiwdow.type === WiwdowType.Menu" v-show="!wiwdow.hidden" :data="wiwdow as MenuWiwdowData"
+        :game="props.game" @close-me="() => wiwdowWantsToClose(wiwdow)" @hide-me="() => wiwdowWantsToHide(wiwdow)">
+      </MenuWiwdow>
       <BigCardsWindow v-if="wiwdow.type === WiwdowType.BigCards" v-show="!wiwdow.hidden"
         :data="wiwdow as BigCardsWiwdowData" @close-me="() => wiwdowWantsToClose(wiwdow)"
         @hide-me="() => wiwdowWantsToHide(wiwdow)"

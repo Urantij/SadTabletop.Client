@@ -19,6 +19,8 @@ import type { EntitiesBaseSystem } from "./things/EntitiesSystem";
 import ChatSystem from "./things/concrete/Chat/ChatSystem";
 import SoundsSystem from "./things/concrete/Sounds/SoundsSystem";
 import PopitsSystem from "./things/concrete/Popits/PopitsSystem";
+import MenuListsSystem from "./things/concrete/Menu/MenuListsSystem";
+import MenuSystem from "./things/concrete/Menu/MenuSystem";
 
 type LeGameEvents = {
   Clearing: () => void;
@@ -39,12 +41,17 @@ export default class LeGame {
 
   public readonly popits: PopitsSystem = new PopitsSystem(this);
 
+  public readonly menuLists: MenuListsSystem = new MenuListsSystem();
+  public readonly menu: MenuSystem = new MenuSystem(this);
+
   private readonly entitiesSystems: EntitiesBaseSystem[] = [
     this.table,
     this.bench,
     this.settings,
     this.cardSelection,
-    this.popits
+    this.popits,
+    this.menuLists,
+    this.menu
   ];
 
   public readonly sounds: SoundsSystem = new SoundsSystem();

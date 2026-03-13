@@ -52,6 +52,13 @@ leGame.popits.events.on("EntityAdded", (popit, data) => {
 });
 // TODO убирать попыты кто будет?
 
+leGame.menu.events.on("EntityAdded", (menu) => {
+  uicontainer.value?.openMenu(menu);
+});
+leGame.menu.events.on("EntityRemoved", (menu) => {
+  uicontainer.value?.closeMenu(menu);
+});
+
 const gameRenderer = new Renderer(leGame, window.innerWidth, window.innerHeight, divId);
 
 userStore.$onAction(({
