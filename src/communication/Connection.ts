@@ -7,6 +7,7 @@ import type PlayerLeftMessage from "./messages/server/PlayerLeftMessage";
 import { useUserStore } from "@/stores/UserStore";
 import type EntityAddedMessage from "./messages/server/EntityAddedMessage";
 import type EntityRemovedMessage from "./messages/server/EntityRemovedMessage";
+import type FileDownloadMessage from "./messages/server/FileDownloadMessage";
 
 type MessageEvents = {
   MeJoined: (data: JoinedMessage) => void;
@@ -14,6 +15,7 @@ type MessageEvents = {
   PlayerLeft: (data: PlayerLeftMessage) => void;
   EntityAdded: (data: EntityAddedMessage) => void;
   EntityRemoved: (data: EntityRemovedMessage) => void;
+  FileDownloaded: (data: FileDownloadMessage) => void;
 }
 
 interface SubInfo {
@@ -89,6 +91,9 @@ export default class Connection {
     }
     else if (messageContainer.name === "EntityRemovedMessage") {
       this.events.emit("EntityRemoved", messageContainer.content as EntityRemovedMessage);
+    }
+    else if (messageContainer.name === "FileDownloadMessage") {
+      this.events.emit("FileDownloaded", messageContainer.content as FileDownloadMessage);
     }
   }
 

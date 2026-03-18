@@ -11,6 +11,7 @@ import { useChatStore } from '@/stores/ChatStore';
 import { usePopitStore } from '@/stores/PopitStore';
 import { useRendererStore } from '@/stores/RendererStore';
 import { useUserStore } from '@/stores/UserStore';
+import FilesFlies from '@/utilities/FilesFlies';
 import ContextMenu, { type MenuItem } from '@imengyu/vue3-context-menu';
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 
@@ -114,6 +115,15 @@ onMounted(async () => {
       userStore.setName(name);
     }
   }
+
+  connection.events.on("FileDownloaded", (data) => {
+    fetch("data:text/plain;base64," + data.content)
+      .then(res => res.blob())
+      .then(blob => {
+        console.log(blob);
+        FilesFlies.save(data.name, blob);
+      });
+  });
 
   connection.events.once("MeJoined", () => {
     gameRenderer.initAsync().then(() => {
